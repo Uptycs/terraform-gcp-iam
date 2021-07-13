@@ -17,9 +17,9 @@ This module is meant for use with Terraform version = "~> 3.61.0". If you haven'
 
 # Usage
 
-## Install terraform (One-time)
+## 1. Install terraform (One-time)
 
-## Get authentication
+## 2. Get authentication
 ```
 Option 1: Set credntial file in main.tf. Edit following line with credential file path
   - "credentials = file("CREDENTIALS_FILE.json")"
@@ -27,18 +27,56 @@ Option 2: Login with ADC
   - "gcloud auth application-default login"
 ```
 
+## 3. Use terraform module steps 
+  * Create a <filename>.tf file and paste below code
+```
+module "create-gcp-cred" {
+  source = "git@github.com:Uptycs/terraform-gcp-iam.git"
+  gcp_region = "us-east1"
+  gcp_project_id = "test-project"
+  gcp_project_number = "1234567899"
+  is_service_account_exists = false
+  service_account_name = "sa-for-cldquery"
+
+  # Host aws account details
+  host_aws_account_id = "< aws account id >"
+  host_aws_instance_role = "< aws host role >"
+
+  # Modify if required
+  gcp_workload_identity = "wip-uptycs"
+  gcp_wip_provider_id   = "aws-id-provider-uptycs"
+}
 
 
-# Modify locals.tf file as per requirement .
-# 1. Pass GCP Project Details .
-# 2. Pass Region and Zone
-# 3. Set service account details
-     # Set is_service_account_exists = true if service account is already exists and pass service account name in service_account_name .
-     # Set is_service_account_exists = false if service account is not exists and give a new name to create service account in service_account_name.
-# 4. Set Uptycs Cloudquery Host AWS account ID and AWS Role Name
+
+output "service-account-email" {
+  description = "The deployed Service Account's email-id"
+  value       = module.create-gcp-cred.service-account-email
+
+}
+
+output "command-to-generate-gcp-cred-config" {
+  value = module.create-gcp-cred.command-to-generate-gcp-cred-config
+}
+
+```
+
+  * Points to be remember
+```
+  1. service account details 
+     - Set is_service_account_exists = true if service account is already exists and pass existing service account name in service_account_name .
+     - Set is_service_account_exists = false if service account is not exists and give a new name to create service account in service_account_name.
+  2. Workload Identity Pool can't be deleted permanently , It is soft-deleted , Soft-deleted providers are permanently deleted after approximately 30 days.
+     You can restore a soft-deleted provider using UndeleteWorkloadIdentityPoolProvider. You cannot reuse the ID of a soft-deleted provider until it is permanently deleted.
+     After terraform destroy same WIP can't be created again , So modify "gcp_workload_identity" value if required.
+
+  3. credentials.json only create once until there are no changes on variables , for creating again same cred config json data ,please use command return by "command-to-generate-gcp-cred-config"
+
+```
 
 
-#Execute Terraform Script to get credentials JSON
+## 4.Execute Terraform Script to get credentials JSON
+```
 #Init
 #  terraform init
 
@@ -53,11 +91,4 @@ Option 2: Login with ADC
 #Destroy
 #  "terraform destroy"
 
-
-
-# Remember :-
-# 1. Workload Identity Pool can't be deleted permanently , It is soft-deleted , Soft-deleted providers are permanently deleted after approximately 30 days.
-     You can restore a soft-deleted provider using UndeleteWorkloadIdentityPoolProvider. You cannot reuse the ID of a soft-deleted provider until it is permanently deleted.
-     After terraform destroy same WIP can't be created again , So modify "WORKLOAD_IDENTITY" value if required.
-
-# 2. credentials.json only create once until there are no changes on variables , for creating again same cred config json data ,please use command return by "Create_Credential_Config_file_command"
+```
