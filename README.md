@@ -1,9 +1,9 @@
-# terraform gcp iam module 
+# terraform gcp iam module
 
 This module allows you to create gcp credential config in Google Cloud Platform projects which will be used get gcp data from aws environment. 
 
 This terraforms module will create below resources:-
- * It creates service account , workpool identity and add cloud provider to it .
+ * It creates service account , work pool identity and add cloud provider to it .
  * It will attach below policies to service account 
      * roles/iam.securityReviewer 
      * roles/bigquery.resourceViewer
@@ -28,10 +28,10 @@ Option 2: Login with ADC
 ```
 
 ## 3. Use terraform module steps 
-  * Create a <filename>.tf file and paste below code
+  * Create a <filename>.tf file , paste below codes and modify as per requirement .
 ```
 module "create-gcp-cred" {
-  source = "git@github.com:Uptycs/terraform-gcp-iam.git"
+  source = "https://github.com/Uptycs/terraform-gcp-iam"
   gcp_region = "us-east1"
   gcp_project_id = "test-project"
   gcp_project_number = "1234567899"
@@ -50,7 +50,6 @@ module "create-gcp-cred" {
 
 
 output "service-account-email" {
-  description = "The deployed Service Account's email-id"
   value       = module.create-gcp-cred.service-account-email
 
 }
@@ -60,6 +59,32 @@ output "command-to-generate-gcp-cred-config" {
 }
 
 ```
+
+  * Details about input and output 
+
+## Inputs
+
+| Name                      | Description                                                                                                        | Type          | Default          | 
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------- | ---------------- | 
+| gcp_region                | The gcp project region where planning to create resources.                                                         | `string`      | `us-east-1`      |
+| gcp_project_id            | The gcp project id where you wants create resources.                                                               | `string`      | `""`             |
+| gcp_project_number        | The gcp project number of above passed project id.                                                                 | `number`      | `""`             |
+| is_service_account_exists | This is set true or false i.e. whether you wants to use existing/new service account .                             | `bool`        | `false`          | 
+| service_account_name      | The gcp service account name , if service account is already exists then pass existing service account name else pass new name| `string` | `"sa-for-uptycs"` |
+| host_aws_account_id       | The deployer host aws account id.                                                                                  | `number`      | `""`             |
+| host_aws_instance_role    | The attached deployer host aws role name.                                                                          | `string`      | `""`             |
+| gcp_workload_identity     | Workload Identity Pool to allow Uptycs integration via AWS federation                                              | `string`      | `""`             |
+| gcp_wip_provider_id       | Workload Identity Pool provider id allow to add cloud provider                                                     | `string`      | `""`             |
+
+## Outputs
+
+| Name                    | Description                                  |
+| ----------------------- | -------------------------------------------- |
+| service-account-email   | The deployed Service Account's email-id |
+| command-to-generate-gcp-cred-config  | For creating again same cred config json data ,please use command return by "command-to-generate-gcp-cred-config"                            |
+
+
+
 
   * Points to be remember
 ```

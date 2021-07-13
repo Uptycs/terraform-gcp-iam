@@ -6,7 +6,7 @@ variable "gcp_region" {
 
 variable "gcp_project_id" {
   type        = string
-  description = "The gcp project id "
+  description = "The gcp project id where planning to create resources"
   default     = "test-project"
 }
 
