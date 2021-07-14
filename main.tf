@@ -1,5 +1,5 @@
 provider "google-beta" {
-  //Set credntial file or run "gcloud auth application-default login"
+  // Set credntial file or run "gcloud auth application-default login"
   version = "~> 3.61.0"
   region  = var.gcp_region
   project = var.gcp_project_id
@@ -69,15 +69,12 @@ resource "google_service_account_iam_binding" "workload_identity_binding" {
   members = [
     "principalSet://iam.googleapis.com/projects/${var.gcp_project_number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.create_wip.workload_identity_pool_id}/attribute.aws_role/arn:aws:sts::${var.host_aws_account_id}:assumed-role/${var.host_aws_instance_role}"
   ]
-
 }
 
-//Create Credential Config file
+// Create credentials config file
 resource "null_resource" "cred_config_json" {
   provisioner "local-exec" {
     command     = "gcloud iam workload-identity-pools create-cred-config projects/${var.gcp_project_number}/locations/global/workloadIdentityPools/${var.gcp_workload_identity}/providers/${var.gcp_wip_provider_id} --service-account=${var.is_service_account_exists == false ? google_service_account.sa_for_cloudquery[0].email : data.google_service_account.myaccount[0].email} --output-file=credentials.json --aws"
     interpreter = ["/bin/sh", "-c"]
   }
 }
-
-
