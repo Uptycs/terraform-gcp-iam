@@ -21,9 +21,7 @@ This module is meant for use with Terraform version = "~> 3.61.0".
 
 ## 2. Authenticate
 ```
-Option 1: Set credential file in main.tf. Edit following line with credential file path
-  - "credentials = file("CREDENTIALS_FILE.json")"
-Option 2: Login with ADC
+Login with ADC
   - "gcloud auth application-default login"
 ```
 
@@ -32,7 +30,7 @@ Option 2: Login with ADC
   * Create a <filename>.tf file, paste below codes and modify as needed.
 ```
 module "create-gcp-cred" {
-  source                    = "https://github.com/Uptycs/terraform-gcp-iam"
+  source                    = "github.com/Uptycs/terraform-google-iam-config"
   gcp_region                = "us-east1"
   gcp_project_id            = "test-project"
   gcp_project_number        = "1234567899"
@@ -90,7 +88,7 @@ output "command-to-generate-gcp-cred-config" {
      - Soft-deleted provider can be restored using `UndeleteWorkloadIdentityPoolProvider`. ID cannot be re-used until the WIP is permanently deleted.
      - After `terraform destroy`, same WIP can't be created again. Modify `gcp_workload_identity` value if required.
 
-3. `credentials.json` is only created once. To recreated the file use command returned by `command-to-generate-gcp-cred-config` output.
+3. `credentials.json` is only created once. To re create the file use command returned by `command-to-generate-gcp-cred-config` output.
 
 
 ## 4.Execute Terraform script to get credentials JSON
