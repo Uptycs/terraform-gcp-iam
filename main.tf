@@ -1,4 +1,4 @@
-provider "google-beta" {
+provider "google" {
   version = "~> 3.61.0"
   region  = var.gcp_region
   project = var.gcp_project_id
