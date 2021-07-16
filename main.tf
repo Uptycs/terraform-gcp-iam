@@ -1,9 +1,3 @@
-provider "google" {
-  version = "~> 3.61.0"
-  region  = var.gcp_region
-  project = var.gcp_project_id
-}
-
 data "google_service_account" "myaccount" {
   count      = var.is_service_account_exists ? 1 : 0
   account_id = var.service_account_name
